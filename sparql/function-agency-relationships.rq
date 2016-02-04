@@ -1,5 +1,6 @@
 PREFIX crm: <http://erlangen-crm.org/current/>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?FUNCTION ?AGENCY
 WHERE{
@@ -15,7 +16,30 @@ WHERE{
   ?agency_appellation a crm:E82_Actor_Appellation.
   ?agency_appellation rdf:value ?agency_appellation_value.
   
-  bind(concat(?agency_identifier_value, ' ', ?agency_appellation_value) as ?AGENCY).
+  OPTIONAL {
+  	?agency crm:P95i_was_formed_by ?agency_formation.
+  	?agency_formation crm:P4_has_time-span ?agency_formation_timespan.
+  	?agency_formation_timespan rdf:value ?agency_formation_date.
+  }
+  OPTIONAL {
+  	?agency crm:P99i_was_dissolved_by ?agency_dissolution.
+  	?agency_dissolution crm:P4_has_time-span ?agency_dissolution_timespan.
+  	?agency_dissolution_timespan rdf:value ?agency_dissolution_date.
+  }  
+  
+  bind(
+  	concat(
+  		?agency_identifier_value, 
+  		' ', 
+  		?agency_appellation_value,
+  		COALESCE(
+  			concat(' ', xsd:string(?agency_formation_date), '–', xsd:string(?agency_dissolution_date)),
+  			concat(' ', xsd:string(?agency_formation_date), '–'),
+  			concat(' –', xsd:string(?agency_dissolution_date)),
+			'' 			
+  		)
+  	) as ?AGENCY
+  ).
 
   ?function crm:P1_is_identified_by ?function_identifier.
   ?function_identifier a crm:E42_Identifier.
@@ -27,5 +51,3 @@ WHERE{
   
   bind(concat(?function_identifier_value, ' ', ?function_appellation_value) as ?FUNCTION).
 }
-
-

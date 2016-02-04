@@ -27,7 +27,7 @@ where
     ?agencyId a crm:E42_Identifier.
     ?agencyName rdf:value ?agencyNameValue.
     ?agencyId rdf:value ?agencyIdValue.
-    bind(concat(?agencyIdValue, ' ', ?agencyNameValue) as ?FUNCTION).
+
     #NB agency formation and dissolution events and dates may not be known
     optional {
       ?agency crm:P95i_was_formed_by ?agencyFormation.
@@ -37,17 +37,25 @@ where
       ?agencyFormationDate rdf:value ?agencyFormationDateValue.
     }
     optional {
-      bind('ND' as ?agencyFormationDateValue).
-      filter (!bound( ?agencyFormationDateValue))
-    }
-    optional {
       ?agency crm:P99i_was_dissolved_by ?agencyDissolution.
       ?agencyDissolution a crm:E68_Dissolution.
       ?agencyDissolution crm:P4_has_time-span ?agencyDissolutionDate.
       ?agencyDissolutionDate a crm:E52_Time-Span.
       ?agencyDissolutionDate rdf:value ?agencyDissolutionDateValue.
     }
-    
+    bind(
+        concat(
+            ?agencyIdValue, 
+            ' ', 
+            ?agencyNameValue,
+            COALESCE(
+                concat(' ', xsd:string(?agencyFormationDateValue), '–', xsd:string(?agencyDissolutionDateValue)),
+                concat(' ', xsd:string(?agencyFormationDateValue), '–'),
+                concat(' –', xsd:string(?agencyDissolutionDateValue)),
+                '' 			
+            )
+        ) as ?FUNCTION
+    ). 
     bind(
       concat(
         if(
@@ -65,3 +73,4 @@ where
     as ?PERIOD).
   }  
 }
+
