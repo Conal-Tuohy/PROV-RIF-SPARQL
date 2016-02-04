@@ -1,0 +1,31 @@
+PREFIX crm: <http://erlangen-crm.org/current/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?FUNCTION ?AGENCY
+WHERE{
+  ?agency a crm:E40_Legal_Body.
+  ?function a crm:E7_Activity.
+  ?function crm:P14_carried_out_by ?agency.
+  
+  ?agency crm:P1_is_identified_by ?agency_identifier.
+  ?agency_identifier a crm:E42_Identifier.
+  ?agency_identifier rdf:value ?agency_identifier_value.
+  
+  ?agency crm:P1_is_identified_by ?agency_appellation.
+  ?agency_appellation a crm:E82_Actor_Appellation.
+  ?agency_appellation rdf:value ?agency_appellation_value.
+  
+  bind(concat(?agency_identifier_value, ' ', ?agency_appellation_value) as ?AGENCY).
+
+  ?function crm:P1_is_identified_by ?function_identifier.
+  ?function_identifier a crm:E42_Identifier.
+  ?function_identifier rdf:value ?function_identifier_value.  
+  
+  ?function crm:P1_is_identified_by ?function_appellation.
+  ?function_appellation a crm:E41_Appellation.
+  ?function_appellation rdf:value ?function_appellation_value.
+  
+  bind(concat(?function_identifier_value, ' ', ?function_appellation_value) as ?FUNCTION).
+}
+
+

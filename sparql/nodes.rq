@@ -1,0 +1,67 @@
+PREFIX crm: <http://erlangen-crm.org/current/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+select ?FUNCTION ?PERIOD ?URL
+# actually ?FUNCTION is misnamed - it includes functions AND agencies.
+# it should be called ?nodeName but for backward compatibility it is still called ?FUNCTION
+where
+{
+  {
+      ?function a crm:E7_Activity.
+      ?function crm:P70_is_documented_in ?URL.
+      ?function crm:P1_is_identified_by ?functionName.
+      ?function crm:P1_is_identified_by ?functionId.
+      ?functionName a crm:E41_Appellation.
+      ?functionId a crm:E42_Identifier.
+      ?functionName rdf:value ?functionNameValue.
+      ?functionId rdf:value ?functionIdValue.
+      bind(concat(?functionIdValue, ' ', ?functionNameValue) as ?FUNCTION)
+  }
+  UNION
+  {
+    ?agency a crm:E40_Legal_Body.
+    ?agency crm:P70_is_documented_in ?URL.
+    ?agency crm:P1_is_identified_by ?agencyName.
+    ?agency crm:P1_is_identified_by ?agencyId.
+    ?agencyName a crm:E82_Actor_Appellation.
+    ?agencyId a crm:E42_Identifier.
+    ?agencyName rdf:value ?agencyNameValue.
+    ?agencyId rdf:value ?agencyIdValue.
+    bind(concat(?agencyIdValue, ' ', ?agencyNameValue) as ?FUNCTION).
+    #NB agency formation and dissolution events and dates may not be known
+    optional {
+      ?agency crm:P95i_was_formed_by ?agencyFormation.
+      ?agencyFormation a crm:E66_Formation.
+      ?agencyFormation crm:P4_has_time-span ?agencyFormationDate.
+      ?agencyFormationDate a crm:E52_Time-Span.
+      ?agencyFormationDate rdf:value ?agencyFormationDateValue.
+    }
+    optional {
+      bind('ND' as ?agencyFormationDateValue).
+      filter (!bound( ?agencyFormationDateValue))
+    }
+    optional {
+      ?agency crm:P99i_was_dissolved_by ?agencyDissolution.
+      ?agencyDissolution a crm:E68_Dissolution.
+      ?agencyDissolution crm:P4_has_time-span ?agencyDissolutionDate.
+      ?agencyDissolutionDate a crm:E52_Time-Span.
+      ?agencyDissolutionDate rdf:value ?agencyDissolutionDateValue.
+    }
+    
+    bind(
+      concat(
+        if(
+          bound(?agencyFormationDateValue),
+          xsd:string(?agencyFormationDateValue), 
+          ''
+        ),
+        '-', 
+        if(
+          bound(?agencyDissolutionDateValue), 
+          xsd:string(?agencyDissolutionDateValue),
+          ''
+        )
+      )
+    as ?PERIOD).
+  }  
+}
