@@ -8,7 +8,7 @@
 <project name="Retailer" default="war">
 
 	<property file="ant/build.properties"/>
-	<description>XProc-Z is an XML processing web proxy.</description>
+	<description>Harvester is an OAI-PMH to SPARQL graph store gateway</description>
 
 	<path id="classpath">
 		<fileset dir="lib" includes="*.jar"/>
@@ -87,7 +87,7 @@
 
 	<target name="war" depends="copy">
 		<echo>Building the war file ...</echo>
-		<war destfile="dist/xproc-z.war" webxml="build/webapp/WEB-INF/web.xml">
+		<war destfile="dist/harvester.war" webxml="build/webapp/WEB-INF/web.xml">
 			<fileset dir="build/webapp"/>
 		</war>
 	</target>
