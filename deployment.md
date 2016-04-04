@@ -8,12 +8,30 @@ Install curl
 Install PROV-RIF-SPARQL pipeline
 Schedule updates
 
+# Check Java is at least version 8 (also known as 1.8).
+
+The Fuseki SPARQL store requires Java 8.
+
+Check the version of Java installed:
+
+```bash
+java -showversion
+```
+
+If the version of Java is not at least 8 (shown as "1.8"), you will need to update it.
+
+As root, add the repository for Oracle Java 8, download the package metadata, and install Java 8.
+
+```bash
+# add-apt-repository ppa:webupd8team/java
+# apt-get update
+# apt-get install oracle-java8-installer
+# apt-get install oracle-java8-set-default
+```
 
 # Install command-line utilities
 
-The `git` utility will be used to retrieve the PROV-RIF-SPARQL data processing pipeline from github.
-
-The `unzip` utility will be used to unzip the Fuseki installation package.
+The `unzip` utility will be needed to unzip the Fuseki installation package.
 
 The `curl` utility is used to query the SPARQL store and retrieve two CSV files; one containing
 descriptions of nodes in the visualization, and the other containing an adjacency matrix (i.e. edges).
@@ -22,21 +40,21 @@ To install these utilities, use the following `bash` commands:
 
 ```bash
 # apt-get update
-# apt-get install git unzip curl
+# apt-get install unzip curl
 ```
 
 # Install PROV-RIF-SPARQL harvester application
 
 Download `harvester.war` web application archive from https://github.com/Conal-Tuohy/PROV-RIF-SPARQL/releases/download/v1.0/harvester.war
-and save it in `/var/lib/tomcat7/webapps/` folder.
+and save it in the `/var/lib/tomcat7/webapps/` folder.
 
-# Install and configure Fuseki 2
+# Install and configure Fuseki 2 SPARQL store
 
 Create a home folder for Fuseki configuration and data storage, and install the Fuseki configuration file.
 
 ```bash
-mkdir /etc/fuseki
-mkdir /etc/fuseki/configuration
+# mkdir /etc/fuseki
+# mkdir /etc/fuseki/configuration
 ```
 
 Download the configuration file from https://raw.githubusercontent.com/Conal-Tuohy/PROV-RIF-SPARQL/master/prov.ttl and save it in the `/etc/fuseki/configuration` folder.
@@ -48,7 +66,7 @@ unzip apache-jena-fuseki-2.3.1.zip
 cp apache-jena-fuseki-2.3.1/fuseki.war /var/lib/tomcat7/webapps/
 ```
 
-# Complete installation of web apps
+# Complete installation of the web apps
 
 To complete installation of the Fuseki and Harvester web applications, restart Tomcat like so:
 
@@ -66,7 +84,7 @@ Download the `scripts.zip` file from TODO and install it by unzipping its conten
 # crontab -e
 ```
 
-The `begin-harvest.sh` script should be scheduled to shortly after the OAI-PMH provider's data has been updated. The harvest script will harvest data records from the OAI-PMH provider, convert them to RDF, and store them in the SPARQL store. This process should take about 40 minutes to an hour, though the time taken will grow as the OAI-PMH dataset grows in size. 
+The `begin-harvest.sh` script should be scheduled to run at a convenient time, soon after the OAI-PMH provider's data has been updated. The harvest script will harvest data records from the OAI-PMH provider, convert them to RDF, and store them in the SPARQL store. This process may take about 40 minutes to an hour.
 
 The `regenerate-csv.sh` script will query the SPARQL store to regenerate the CSV data files used by the PROVisualizer. For safety, allow the harvest two hours to complete, before the scheduled start of the `regenerate-csv.sh` script.
 
