@@ -16,5 +16,5 @@ curl -X POST \
 --data-urlencode "metadataPrefix=rif" \
 --data-urlencode "set=group:Public0x20Record0x20Office0x20Victoria" \
 --data-urlencode "graphStore=http://localhost:8080/fuseki/prov/data" \
---data-urlencode "resourceBaseURI=http://metadata.prov.vic.gov.au/resource/" \
+--data-urlencode "resourceBaseURI=http://metadata.prov.vic.gov.au/lod/" \
 http://localhost:8080/harvester/
