@@ -56,8 +56,7 @@ and save it in the `/var/lib/tomcat7/webapps/` folder.
 Create a home folder for Fuseki configuration and data storage, and install the Fuseki configuration file.
 
 ```bash
-# mkdir /etc/fuseki
-# mkdir /etc/fuseki/configuration
+# mkdir -p /etc/fuseki/configuration
 # chown -R tomcat7:tomcat7 /etc/fuseki
 ```
 
@@ -83,8 +82,9 @@ To complete installation of the Fuseki and Harvester web applications, restart T
 Download the `scripts.zip` file from https://github.com/Conal-Tuohy/PROV-RIF-SPARQL/releases/download/v1.0/scripts.zip and install it by unzipping its contents, and scheduling two scripts using `crontab -e`, like so:
 
 ```bash
-# mkdir /opt/provisualizer
+# mkdir -p /opt/provisualizer
 # unzip scripts.zip -d /opt/provisualizer
+# chmod a+x /opt/provisualizer/*.sh
 # crontab -e
 ```
 
@@ -101,7 +101,21 @@ A suggested schedule for the two scripts is shown below:
 ```
 
 
+# Install the Provisualizer user interface
 
+Instructions for installing the Provisualizer are at https://github.com/Conal-Tuohy/Provisualizer/
+
+Note that the regenerate-csv.sh script will generate the CSV files at the location `/var/www/html/provisualizer/data/`, so take care to install the Provisualizer in that location.
+
+```bash
+# mkdir -p /var/www/html/provisualizer
+# unzip  Provisualizer-master.zip 
+# http://www.awstats.org/ 
+```
+
+# Analytics
+
+To track usage, you may use analytics software such as http://www.awstats.org/ to track access of the `provisualizer.js` file. This file will be accessed exactly once each time the Provisualizer is loaded in a web page in a user's browser, regardless of how many searches the user then makes inside that page.
 
 
 
