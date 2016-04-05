@@ -1,12 +1,12 @@
 # Deployment instructions
 
+Installing the system on Ubuntu.
 
-
-Install XML Calabash
-Install and configure Apache Fuseki
-Install curl
-Install PROV-RIF-SPARQL pipeline
-Schedule updates
+* Install Java 8
+* Install and configure Apache Fuseki
+* Install curl
+* Install PROV-RIF-SPARQL pipeline
+* Schedule updates
 
 # Check Java is at least version 8 (also known as 1.8).
 
@@ -20,13 +20,16 @@ java -showversion
 
 If the version of Java is not at least 8 (shown as "1.8"), you will need to update it.
 
-As root, add the repository for Oracle Java 8, download the package metadata, and install Java 8.
+As root, add the repository for Oracle Java 8, download the package metadata, install Java 8, and make it the default JVM.
 
 ```bash
 # add-apt-repository ppa:webupd8team/java
 # apt-get update
 # apt-get install oracle-java8-installer
 # apt-get install oracle-java8-set-default
+# apt-get remove default-jre-headless
+# apt-get remove openjdk-7
+# ln -s /usr/lib/jvm/java-8-oracle /usr/lib/jvm/default-java
 ```
 
 # Install command-line utilities
@@ -55,6 +58,7 @@ Create a home folder for Fuseki configuration and data storage, and install the 
 ```bash
 # mkdir /etc/fuseki
 # mkdir /etc/fuseki/configuration
+# chown -R tomcat7:tomcat7 /etc/fuseki
 ```
 
 Download the configuration file from https://raw.githubusercontent.com/Conal-Tuohy/PROV-RIF-SPARQL/master/prov.ttl and save it in the `/etc/fuseki/configuration` folder.
@@ -76,7 +80,7 @@ To complete installation of the Fuseki and Harvester web applications, restart T
 
 # Install the bash scripts and SPARQL queries
 
-Download the `scripts.zip` file from TODO and install it by unzipping its contents, and scheduling two scripts using `crontab -e`, like so:
+Download the `scripts.zip` file from https://github.com/Conal-Tuohy/PROV-RIF-SPARQL/releases/download/v1.0/scripts.zip and install it by unzipping its contents, and scheduling two scripts using `crontab -e`, like so:
 
 ```bash
 # mkdir /opt/provisualizer
