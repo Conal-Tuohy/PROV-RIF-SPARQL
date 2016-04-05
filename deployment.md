@@ -3,14 +3,16 @@
 Installing the system on Ubuntu.
 
 * Install Java 8
+* Install command line utilities
+* Install PROV-RIF-SPARQL harvester application
 * Install and configure Apache Fuseki
-* Install curl
-* Install PROV-RIF-SPARQL pipeline
 * Schedule updates
+* Install Provisualizer user interface
+* Analytics
 
-# Check Java is at least version 8 (also known as 1.8).
+# Check Java is at least version 8
 
-The Fuseki SPARQL store requires Java 8.
+The Fuseki SPARQL store requires Java 8 (also known as 1.8).
 
 Check the version of Java installed:
 
