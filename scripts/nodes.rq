@@ -19,6 +19,18 @@ where
   }
   UNION
   {
+      ?function a crm:E78_Collection.
+      ?function crm:P70_is_documented_in ?URL.
+      ?function crm:P1_is_identified_by ?functionName.
+      ?function crm:P1_is_identified_by ?functionId.
+      ?functionName a crm:E41_Appellation.
+      ?functionId a crm:E42_Identifier.
+      ?functionName rdf:value ?functionNameValue.
+      ?functionId rdf:value ?functionIdValue.
+      bind(concat(?functionIdValue, ' ', ?functionNameValue) as ?FUNCTION)
+  }
+  UNION
+  {
     ?agency a crm:E40_Legal_Body.
     ?agency crm:P70_is_documented_in ?URL.
     ?agency crm:P1_is_identified_by ?agencyName.
@@ -73,4 +85,3 @@ where
     as ?PERIOD).
   }  
 }
-
