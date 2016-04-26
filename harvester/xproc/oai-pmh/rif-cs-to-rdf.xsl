@@ -79,6 +79,35 @@
 			</crm:E41_Appellation>
 		</crm:P1_is_identified_by>
 	</xsl:template>
+	
+	<xsl:template match="rif:activity /rif:coverage/rif:temporal">
+		<xsl:for-each select="rif:date[@type='dateFrom']">
+			<crm:P116_is_started_by>
+				<crm:E5_Event rdf:about="{$resource-uri}#beginning-of-function">
+					<crm:P4_has_time-span>
+						<crm:E52_Time-Span rdf:about="{$resource-uri}#function-start-date">
+							<xsl:call-template name="render-date-value">
+								<xsl:with-param name="date-value" select="."/>
+							</xsl:call-template>
+						</crm:E52_Time-Span>
+					</crm:P4_has_time-span>
+				</crm:E5_Event>
+			</crm:P116_is_started_by>
+		</xsl:for-each>
+		<xsl:for-each select="rif:date[@type='dateTo']">
+			<crm:P115_is_finished_by>
+				<crm:E5_Event rdf:about="{$resource-uri}#end-of-function">
+					<crm:P4_has_time-span>
+						<crm:E52_Time-Span rdf:about="{$resource-uri}#function-end-date">
+							<xsl:call-template name="render-date-value">
+								<xsl:with-param name="date-value" select="."/>
+							</xsl:call-template>
+						</crm:E52_Time-Span>
+					</crm:P4_has_time-span>
+				</crm:E5_Event>
+			</crm:P115_is_finished_by>
+		</xsl:for-each>
+	</xsl:template>
 
 	<xsl:template match="rif:party/rif:name">
 		<crm:P1_is_identified_by>
@@ -131,44 +160,47 @@
 	<xsl:template match="rif:collection/rif:coverage/rif:temporal/rif:text[
 		starts-with(., 'Series in custody date range : ')
 	]">
-		<xsl:variable name="start-date" select="
+		<xsl:variable name="start-date-given" select="
 			substring-before(
 				substring-after(., 'Series in custody date range : '),
 				' - '
 			)
 		"/>
-		<xsl:variable name="end-date" select="substring-after(., ' - ')"/>
-		<!-- the start date refers to the formation of the Legal Body -->
-		<crm:P147_was_curated_by>
-			<crm:E87_Curation_Activity rdf:about="{$resource-uri}#record-keeping-in-custody">
-				<xsl:if test="$start-date">
-					<crm:P116_is_started_by>
-						<crm:E5_Event rdf:about="{$resource-uri}#beginning-of-record-keeping-in-custody">
-							<crm:P4_has_time-span>
-								<crm:E52_Time-Span rdf:about="{$resource-uri}#record-keeping-in-custody-start-date">
-									<xsl:call-template name="render-date-value">
-										<xsl:with-param name="date-value" select="$start-date"/>
-									</xsl:call-template>
-								</crm:E52_Time-Span>
-							</crm:P4_has_time-span>
-						</crm:E5_Event>
-					</crm:P116_is_started_by>
-				</xsl:if>
-				<xsl:if test="$end-date">
-					<crm:P115_is_finished_by>
-						<crm:E5_Event rdf:about="{$resource-uri}#end-of-record-keeping-in-custody">
-							<crm:P4_has_time-span>
-								<crm:E52_Time-Span rdf:about="{$resource-uri}#record-keeping-in-custody-end-date">
-									<xsl:call-template name="render-date-value">
-										<xsl:with-param name="date-value" select="$end-date"/>
-									</xsl:call-template>
-								</crm:E52_Time-Span>
-							</crm:P4_has_time-span>
-						</crm:E5_Event>
-					</crm:P115_is_finished_by>
-				</xsl:if>
-			</crm:E87_Curation_Activity>
-		</crm:P147_was_curated_by>
+		<xsl:variable name="end-date-given" select="substring-after(., ' - ')"/>
+		<xsl:variable name="start-date" select="if ($start-date-given = 'No Date') then '' else $start-date-given"/>
+		<xsl:variable name="end-date" select="if ($end-date-given = 'No Date') then '' else $end-date-given"/>
+		<xsl:if test="$start-date or $end-date"><!-- we have something to say about the series curation -->
+			<crm:P147_was_curated_by>
+				<crm:E87_Curation_Activity rdf:about="{$resource-uri}#record-keeping-in-custody">
+					<xsl:if test="$start-date">
+						<crm:P116_is_started_by>
+							<crm:E5_Event rdf:about="{$resource-uri}#beginning-of-record-keeping-in-custody">
+								<crm:P4_has_time-span>
+									<crm:E52_Time-Span rdf:about="{$resource-uri}#record-keeping-in-custody-start-date">
+										<xsl:call-template name="render-date-value">
+											<xsl:with-param name="date-value" select="$start-date"/>
+										</xsl:call-template>
+									</crm:E52_Time-Span>
+								</crm:P4_has_time-span>
+							</crm:E5_Event>
+						</crm:P116_is_started_by>
+					</xsl:if>
+					<xsl:if test="$end-date">
+						<crm:P115_is_finished_by>
+							<crm:E5_Event rdf:about="{$resource-uri}#end-of-record-keeping-in-custody">
+								<crm:P4_has_time-span>
+									<crm:E52_Time-Span rdf:about="{$resource-uri}#record-keeping-in-custody-end-date">
+										<xsl:call-template name="render-date-value">
+											<xsl:with-param name="date-value" select="$end-date"/>
+										</xsl:call-template>
+									</crm:E52_Time-Span>
+								</crm:P4_has_time-span>
+							</crm:E5_Event>
+						</crm:P115_is_finished_by>
+					</xsl:if>
+				</crm:E87_Curation_Activity>
+			</crm:P147_was_curated_by>
+		</xsl:if>
 	</xsl:template>
 	
 	<!-- Functions are managed by Agencies -->

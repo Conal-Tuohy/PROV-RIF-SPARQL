@@ -1,9 +1,7 @@
 PREFIX crm: <http://erlangen-crm.org/current/>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-select ?FUNCTION ?PERIOD ?URL
-# actually ?FUNCTION is misnamed - it includes functions AND agencies.
-# it should be called ?nodeName but for backward compatibility it is still called ?FUNCTION
+select ?NAME ?PERIOD ?URL
 where
 {
   {
@@ -15,19 +13,83 @@ where
       ?functionId a crm:E42_Identifier.
       ?functionName rdf:value ?functionNameValue.
       ?functionId rdf:value ?functionIdValue.
-      bind(concat(?functionIdValue, ' ', ?functionNameValue) as ?FUNCTION)
+      # function start and end dates may be unknown
+      optional {
+      	?function crm:P116_is_started_by ?functionStart.
+      	?functionStart a crm:E5_Event.
+      	?functionStart crm:P4_has_time-span ?functionStartDate.
+      	?functionStartDate a crm:E52_Time-Span.
+      	?functionStartDate rdf:value ?functionStartDateValue.
+      }
+      optional {
+      	?function crm:P115_is_finished_by ?functionEnd.
+      	?functionEnd a crm:E5_Event.
+      	?functionEnd crm:P4_has_time-span ?functionEndDate.
+      	?functionEndDate a crm:E52_Time-Span.
+      	?functionEndDate rdf:value ?functionEndDateValue.
+      }
+      bind(
+		concat(
+		  if(
+			 bound(?functionStartDateValue),
+			 xsd:string(?functionStartDateValue), 
+			 ''
+		  ),
+		  '-', 
+		  if(
+			 bound(?functionEndDateValue), 
+			 xsd:string(?functionEndDateValue),
+			 ''
+		  )
+		)
+	 as ?PERIOD).
+      bind(concat(?functionIdValue, ' ', ?functionNameValue) as ?NAME)
   }
   UNION
   {
-      ?function a crm:E78_Collection.
-      ?function crm:P70_is_documented_in ?URL.
-      ?function crm:P1_is_identified_by ?functionName.
-      ?function crm:P1_is_identified_by ?functionId.
-      ?functionName a crm:E41_Appellation.
-      ?functionId a crm:E42_Identifier.
-      ?functionName rdf:value ?functionNameValue.
-      ?functionId rdf:value ?functionIdValue.
-      bind(concat(?functionIdValue, ' ', ?functionNameValue) as ?FUNCTION)
+      ?series a crm:E78_Collection.
+      ?series crm:P70_is_documented_in ?URL.
+      ?series crm:P1_is_identified_by ?seriesName.
+      ?series crm:P1_is_identified_by ?seriesId.
+      ?seriesName a crm:E41_Appellation.
+      ?seriesId a crm:E42_Identifier.
+      ?seriesName rdf:value ?seriesNameValue.
+      ?seriesId rdf:value ?seriesIdValue.
+      # the date range of the series in custody may not be known
+      optional {
+      	?series crm:P147_was_curated_by ?curation.
+      	?curation a crm:E87_Curation_Activity.
+      	optional {
+			?curation crm:P116_is_started_by ?curationStart.
+			?curationStart a crm:E5_Event.
+			?curationStart crm:P4_has_time-span ?curationStartDate.
+			?curationStartDate a crm:E52_Time-Span.
+			?curationStartDate rdf:value curationStartDateValue
+      	}
+      	optional {
+			?curation crm:P115_is_finished_by ?curationEnd.
+			?curationEnd a crm:E5_Event.
+			?curationEnd crm:P4_has_time-span ?curationEndDate.
+			?curationEndDate a crm:E52_Time-Span.
+			?curationEndDate rdf:value curationEndDateValue
+      	}
+      }
+      bind(
+		concat(
+		  if(
+			 bound(?curationStartDateValue),
+			 xsd:string(?curationStartDateValue), 
+			 ''
+		  ),
+		  '-', 
+		  if(
+			 bound(?curationEndDateValue), 
+			 xsd:string(?curationEndDateValue),
+			 ''
+		  )
+		)
+	 as ?PERIOD).      
+      bind(concat(?functionIdValue, ' ', ?functionNameValue) as ?NAME)
   }
   UNION
   {
@@ -66,7 +128,7 @@ where
                 concat(' –', xsd:string(?agencyDissolutionDateValue)),
                 '' 			
             )
-        ) as ?FUNCTION
+        ) as ?NAME
     ). 
     bind(
       concat(
