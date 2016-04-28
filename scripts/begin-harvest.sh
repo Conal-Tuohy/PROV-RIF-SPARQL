@@ -11,7 +11,7 @@
 # The result of the request is a copy of the response which the harvester received from the OAI-PMH server,
 # which is simply logged.
 curl -X POST \
---output "response.xml"
+--output "response.xml" \
 --data-urlencode "baseURI=https://researchdata.ands.org.au/registry/services/oai" \
 --data-urlencode "metadataPrefix=rif" \
 --data-urlencode "set=group:Public0x20Record0x20Office0x20Victoria" \
