@@ -4,4 +4,4 @@
 # The "--data-binary" option specifies that the SPARQL file should be sent as is, without stripping end of line markers as "--data" would.
 # The "-X POST" option specifies an HTTP POST.
 curl -X POST --fail --header "Accept: text/csv" --header "Content-Type: application/sparql-query" --data-binary "@nodes.rq" --output "/var/www/html/provisualizer/data/nodes.csv" http://localhost:8080/fuseki/prov/query
-curl -X POST --fail --header "Accept: text/csv" --header "Content-Type: application/sparql-query" --data-binary "@function-agency-relationships.rq" --output "/var/www/html/provisualizer/data/agency-functions.csv" http://localhost:8080/fuseki/prov/query
+curl -X POST --fail --header "Accept: text/csv" --header "Content-Type: application/sparql-query" --data-binary "@edges.rq" --output "/var/www/html/provisualizer/data/edges.csv" http://localhost:8080/fuseki/prov/query

@@ -3,51 +3,108 @@ PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?SOURCE ?TARGET
-WHERE{
-	?agency a crm:E40_Legal_Body.
-	?function a crm:E7_Activity.
-	?function crm:P14_carried_out_by ?agency.
+WHERE {
+	{
+		?agency a crm:E40_Legal_Body.
+		?function a crm:E7_Activity.
+		?function crm:P14_carried_out_by ?agency.
+		
+		?agency crm:P1_is_identified_by ?agency_identifier.
+		?agency_identifier a crm:E42_Identifier.
+		?agency_identifier rdf:value ?agency_identifier_value.
+		
+		?agency crm:P1_is_identified_by ?agency_appellation.
+		?agency_appellation a crm:E82_Actor_Appellation.
+		?agency_appellation rdf:value ?agency_appellation_value.
+		
+		OPTIONAL {
+			?agency crm:P95i_was_formed_by ?agency_formation.
+			?agency_formation crm:P4_has_time-span ?agency_formation_timespan.
+			?agency_formation_timespan rdf:value ?agency_formation_date.
+		}
+		OPTIONAL {
+			?agency crm:P99i_was_dissolved_by ?agency_dissolution.
+			?agency_dissolution crm:P4_has_time-span ?agency_dissolution_timespan.
+			?agency_dissolution_timespan rdf:value ?agency_dissolution_date.
+		}	
+		
+		bind(
+			concat(
+				?agency_identifier_value, 
+				' ', 
+				?agency_appellation_value,
+				COALESCE(
+					concat(' ', xsd:string(?agency_formation_date), '–', xsd:string(?agency_dissolution_date)),
+					concat(' ', xsd:string(?agency_formation_date), '–'),
+					concat(' –', xsd:string(?agency_dissolution_date)),
+				'' 			
+				)
+			) as ?TARGET
+		).
 	
-	?agency crm:P1_is_identified_by ?agency_identifier.
-	?agency_identifier a crm:E42_Identifier.
-	?agency_identifier rdf:value ?agency_identifier_value.
-	
-	?agency crm:P1_is_identified_by ?agency_appellation.
-	?agency_appellation a crm:E82_Actor_Appellation.
-	?agency_appellation rdf:value ?agency_appellation_value.
-	
-	OPTIONAL {
-		?agency crm:P95i_was_formed_by ?agency_formation.
-		?agency_formation crm:P4_has_time-span ?agency_formation_timespan.
-		?agency_formation_timespan rdf:value ?agency_formation_date.
+		?function crm:P1_is_identified_by ?function_identifier.
+		?function_identifier a crm:E42_Identifier.
+		?function_identifier rdf:value ?function_identifier_value.	
+		
+		?function crm:P1_is_identified_by ?function_appellation.
+		?function_appellation a crm:E41_Appellation.
+		?function_appellation rdf:value ?function_appellation_value.
+		
+		bind(concat(?function_identifier_value, ' ', ?function_appellation_value) as ?SOURCE).
 	}
-	OPTIONAL {
-		?agency crm:P99i_was_dissolved_by ?agency_dissolution.
-		?agency_dissolution crm:P4_has_time-span ?agency_dissolution_timespan.
-		?agency_dissolution_timespan rdf:value ?agency_dissolution_date.
-	}	
-	
-	bind(
-		concat(
-			?agency_identifier_value, 
-			' ', 
-			?agency_appellation_value,
-			COALESCE(
-				concat(' ', xsd:string(?agency_formation_date), '–', xsd:string(?agency_dissolution_date)),
-				concat(' ', xsd:string(?agency_formation_date), '–'),
-				concat(' –', xsd:string(?agency_dissolution_date)),
-			'' 			
-			)
-		) as ?TARGET
-	).
-
-	?function crm:P1_is_identified_by ?function_identifier.
-	?function_identifier a crm:E42_Identifier.
-	?function_identifier rdf:value ?function_identifier_value.	
-	
-	?function crm:P1_is_identified_by ?function_appellation.
-	?function_appellation a crm:E41_Appellation.
-	?function_appellation rdf:value ?function_appellation_value.
-	
-	bind(concat(?function_identifier_value, ' ', ?function_appellation_value) as ?SOURCE).
+	UNION
+	{
+		# links connecting series with the agencies which created them
+		
+		# series labels consist of the series id and name
+		
+		?series a crm:E78_Collection.
+		?series crm:P1_is_identified_by ?seriesName.
+		?series crm:P1_is_identified_by ?seriesId.
+		?seriesName a crm:E41_Appellation.
+		?seriesId a crm:E42_Identifier.
+		?seriesName rdf:value ?seriesNameValue.
+		?seriesId rdf:value ?seriesIdValue.
+		bind(concat(?seriesIdValue, ' ', ?seriesNameValue) as ?SOURCE)
+		
+		# agency names consist of the agency id, name, and optionally existence dates
+		
+		?series crm:P147_was_curated_by ?curation.
+		?curation a crm:E87_Curation_Activity.
+		?curation crm:P14_carried_out_by ?agency.
+		?agency a crm:E40_Legal_Body.
+		?agency crm:P1_is_identified_by ?agency_identifier.
+		?agency_identifier a crm:E42_Identifier.
+		?agency_identifier rdf:value ?agency_identifier_value.
+		
+		?agency crm:P1_is_identified_by ?agency_appellation.
+		?agency_appellation a crm:E82_Actor_Appellation.
+		?agency_appellation rdf:value ?agency_appellation_value.
+		
+		OPTIONAL {
+			?agency crm:P95i_was_formed_by ?agency_formation.
+			?agency_formation crm:P4_has_time-span ?agency_formation_timespan.
+			?agency_formation_timespan rdf:value ?agency_formation_date.
+		}
+		OPTIONAL {
+			?agency crm:P99i_was_dissolved_by ?agency_dissolution.
+			?agency_dissolution crm:P4_has_time-span ?agency_dissolution_timespan.
+			?agency_dissolution_timespan rdf:value ?agency_dissolution_date.
+		}	
+		
+		bind(
+			concat(
+				?agency_identifier_value, 
+				' ', 
+				?agency_appellation_value,
+				COALESCE(
+					concat(' ', xsd:string(?agency_formation_date), '–', xsd:string(?agency_dissolution_date)),
+					concat(' ', xsd:string(?agency_formation_date), '–'),
+					concat(' –', xsd:string(?agency_dissolution_date)),
+				'' 			
+				)
+			) as ?TARGET
+		).		
+		
+	}
 }

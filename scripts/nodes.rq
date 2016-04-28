@@ -64,14 +64,14 @@ where
 			?curationStart a crm:E5_Event.
 			?curationStart crm:P4_has_time-span ?curationStartDate.
 			?curationStartDate a crm:E52_Time-Span.
-			?curationStartDate rdf:value curationStartDateValue
+			?curationStartDate rdf:value ?curationStartDateValue
       	}
       	optional {
 			?curation crm:P115_is_finished_by ?curationEnd.
 			?curationEnd a crm:E5_Event.
 			?curationEnd crm:P4_has_time-span ?curationEndDate.
 			?curationEndDate a crm:E52_Time-Span.
-			?curationEndDate rdf:value curationEndDateValue
+			?curationEndDate rdf:value ?curationEndDateValue
       	}
       }
       bind(
@@ -89,7 +89,7 @@ where
 		  )
 		)
 	 as ?PERIOD).      
-      bind(concat(?functionIdValue, ' ', ?functionNameValue) as ?NAME)
+      bind(concat(?seriesIdValue, ' ', ?seriesNameValue) as ?NAME)
   }
   UNION
   {
