@@ -167,8 +167,10 @@
 			)
 		"/>
 		<xsl:variable name="end-date-given" select="substring-after(., ' - ')"/>
-		<xsl:variable name="start-date" select="if ($start-date-given = 'No Date') then '' else $start-date-given"/>
-		<xsl:variable name="end-date" select="if ($end-date-given = 'No Date') then '' else $end-date-given"/>
+		<xsl:variable name="start-date" 
+			select="if (matches($start-date-given, '[0-9]{4}')) then $start-date-given else '' "/>
+		<xsl:variable name="end-date" 
+			select="if (matches($end-date-given, '[0-9]{4}')) then $end-date-given else '' "/>
 		<xsl:if test="$start-date or $end-date"><!-- we have something to say about the series curation -->
 			<crm:P147_was_curated_by>
 				<crm:E87_Curation_Activity rdf:about="{$resource-uri}#record-keeping-in-custody">
