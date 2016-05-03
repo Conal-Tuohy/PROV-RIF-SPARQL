@@ -50,7 +50,7 @@ To install these utilities, use the following `bash` commands:
 
 # Install PROV-RIF-SPARQL harvester application
 
-Download `harvester.war` web application archive from https://github.com/Conal-Tuohy/PROV-RIF-SPARQL/releases/download/v1.0/harvester.war
+Download `harvester.war` web application archive from https://github.com/Conal-Tuohy/PROV-RIF-SPARQL/releases/download/v3.0/harvester.war
 and save it in the `/var/lib/tomcat7/webapps/` folder.
 
 # Install and configure Fuseki 2 SPARQL store
@@ -81,7 +81,7 @@ To complete installation of the Fuseki and Harvester web applications, restart T
 
 # Install the bash scripts and SPARQL queries
 
-Download the `scripts.zip` file from https://github.com/Conal-Tuohy/PROV-RIF-SPARQL/releases/download/v1.0/scripts.zip and install it by unzipping its contents, and scheduling two scripts using `crontab -e`, like so:
+Download the `scripts.zip` file from https://github.com/Conal-Tuohy/PROV-RIF-SPARQL/releases/download/v3.0/scripts.zip and install it by unzipping its contents, and scheduling two scripts using `crontab -e`, like so:
 
 ```bash
 # mkdir -p /opt/provisualizer
@@ -112,7 +112,6 @@ Note that the regenerate-csv.sh script will generate the CSV files at the locati
 ```bash
 # mkdir -p /var/www/html/provisualizer
 # unzip  Provisualizer-master.zip 
-# http://www.awstats.org/ 
 ```
 
 # Analytics
