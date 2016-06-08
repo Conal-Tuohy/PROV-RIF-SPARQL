@@ -56,7 +56,7 @@ WHERE {
 	{
 		# links connecting series with the agencies which created them
 		
-		# series labels consist of the series id and name
+		# series labels consist of the series id and name and optional date rang
 		
 		?series a crm:E78_Collection.
 		?series crm:P1_is_identified_by ?seriesName.
@@ -65,7 +65,16 @@ WHERE {
 		?seriesId a crm:E42_Identifier.
 		?seriesName rdf:value ?seriesNameValue.
 		?seriesId rdf:value ?seriesIdValue.
-		bind(concat(?seriesIdValue, ' ', ?seriesNameValue) as ?SOURCE)
+		bind(
+			concat(?seriesIdValue, ' ', ?seriesNameValue,
+				coalesce(
+						 concat(' ', xsd:string(?curationStartDateValue), '–', xsd:string(?curationEndDateValue)),
+						 concat(' ', xsd:string(?curationStartDateValue), '–'),
+						 concat(' –', xsd:string(?curationEndDateValue)),
+						 '' 			
+				  )
+			)
+		 as ?SOURCE)
 		
 		# agency names consist of the agency id, name, and optionally existence dates
 		

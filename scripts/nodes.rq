@@ -89,7 +89,16 @@ where
 		  )
 		)
 	 as ?PERIOD).      
-      bind(concat(?seriesIdValue, ' ', ?seriesNameValue) as ?NAME)
+      bind(
+      	concat(?seriesIdValue, ' ', ?seriesNameValue,
+				coalesce(
+						 concat(' ', xsd:string(?curationStartDateValue), '–', xsd:string(?curationEndDateValue)),
+						 concat(' ', xsd:string(?curationStartDateValue), '–'),
+						 concat(' –', xsd:string(?curationEndDateValue)),
+						 '' 			
+				  )
+      	)
+      as ?NAME) 
   }
   UNION
   {
