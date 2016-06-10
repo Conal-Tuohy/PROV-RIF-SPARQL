@@ -4,6 +4,7 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?SOURCE ?TARGET
 WHERE {
+	# links between Functions and Agencies
 	{
 		?agency a crm:E40_Legal_Body.
 		?function a crm:E7_Activity.
@@ -52,12 +53,10 @@ WHERE {
 		
 		bind(concat(?function_identifier_value, ' ', ?function_appellation_value) as ?SOURCE).
 	}
-	UNION
+UNION
+	# links between Series and the Agencies which created them
 	{
-		# links connecting series with the agencies which created them
-		
 		# series labels consist of the series id and name and optional date rang
-		
 		?series a crm:E78_Collection.
 		?series crm:P1_is_identified_by ?seriesName.
 		?series crm:P1_is_identified_by ?seriesId.
@@ -65,6 +64,30 @@ WHERE {
 		?seriesId a crm:E42_Identifier.
 		?seriesName rdf:value ?seriesNameValue.
 		?seriesId rdf:value ?seriesIdValue.
+		?series crm:P147_was_curated_by ?curation.
+
+		# the date range of the series in custody may not be known
+		optional {
+			?series crm:P147_was_curated_by ?custodyCuration.
+			?curation a crm:E87_Curation_Activity.
+			optional {
+				?custodyCuration crm:P116_is_started_by ?curationStart.
+				?curationStart a crm:E5_Event.
+				?curationStart crm:P4_has_time-span ?curationStartDate.
+				?curationStartDate a crm:E52_Time-Span.
+				?curationStartDate rdf:value ?curationStartDateValue
+			}
+			optional {
+				?custodyCuration crm:P115_is_finished_by ?curationEnd.
+				?curationEnd a crm:E5_Event.
+				?curationEnd crm:P4_has_time-span ?curationEndDate.
+				?curationEndDate a crm:E52_Time-Span.
+				?curationEndDate rdf:value ?curationEndDateValue
+			}
+      		# other curation activities (whose start and end are both unknown) are of no interest
+			filter(bound(?curationEnd) || bound(?curationStart))
+		}			
+
 		bind(
 			concat(?seriesIdValue, ' ', ?seriesNameValue,
 				coalesce(
@@ -77,9 +100,7 @@ WHERE {
 		 as ?SOURCE)
 		
 		# agency names consist of the agency id, name, and optionally existence dates
-		
-		?series crm:P147_was_curated_by ?curation.
-		?curation a crm:E87_Curation_Activity.
+			
 		?curation crm:P14_carried_out_by ?agency.
 		?agency a crm:E40_Legal_Body.
 		?agency crm:P1_is_identified_by ?agency_identifier.

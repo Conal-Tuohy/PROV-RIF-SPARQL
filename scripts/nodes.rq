@@ -73,6 +73,8 @@ where
 			?curationEndDate a crm:E52_Time-Span.
 			?curationEndDate rdf:value ?curationEndDateValue
       	}
+      	# other curation activities (whose start and end are both unknown) are of no interest
+		filter(bound(?curationEnd) || bound(?curationStart))
       }
       bind(
 		concat(
