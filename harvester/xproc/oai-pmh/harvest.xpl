@@ -290,7 +290,7 @@
 		<p:option name="set" required="true"/>
 		
 		<p:for-each>
-			<p:iteration-source select="/oai:OAI-PMH[oai:ListRecords/oai:resumptionToken]"/>
+			<p:iteration-source select="/oai:OAI-PMH[oai:ListRecords/oai:resumptionToken/text()]"/>
 			<p:template name="resumption-request">
 				<p:with-param name="request-uri" select="$request-uri"/>
 				<p:with-param name="base-uri" select="$base-uri"/>
