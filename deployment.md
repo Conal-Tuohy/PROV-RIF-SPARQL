@@ -50,7 +50,7 @@ To install these utilities, use the following `bash` commands:
 
 # Install PROV-RIF-SPARQL harvester application
 
-Download `harvester.war` web application archive from https://github.com/Conal-Tuohy/PROV-RIF-SPARQL/releases/download/v4.0/harvester.war
+Download `harvester.war` web application archive from https://github.com/Conal-Tuohy/PROV-RIF-SPARQL/releases/download/v4.1/harvester.war
 and save it in the `/var/lib/tomcat7/webapps/` folder.
 
 # Install and configure Fuseki 2 SPARQL store
