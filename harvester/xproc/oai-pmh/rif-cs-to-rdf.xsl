@@ -26,8 +26,10 @@
 	<xsl:variable name="resource-uri" select="
 		concat(
 			'resource/',
-			encode-for-uri(
-				/oai:record/oai:metadata/rif:registryObjects/rif:registryObject/rif:key
+			translate(
+				/oai:record/oai:metadata/rif:registryObjects/rif:registryObject/rif:key,
+				' ',
+				'-'
 			)
 		)
 	"/>
@@ -164,9 +166,9 @@
 		<!-- NB "hasCollector" is the correct type, but PROV records have "hasCreator" -->
 		<crm:P147_was_curated_by>
 			<!-- the different related curators each performed their own distinct curation activity -->
-			<crm:E87_Curation_Activity rdf:about="{$resource-uri}#curation-by-{encode-for-uri(rif:key)}">
+			<crm:E87_Curation_Activity rdf:about="{$resource-uri}#curation-by-{translate(rif:key, ' ', '-')}">
 				<crm:P14_carried_out_by>
-					<crm:E40_Legal_Body rdf:about="resource/{encode-for-uri(rif:key)}"/>
+					<crm:E40_Legal_Body rdf:about="resource/{translate(rif:key, ' ', '-')}"/>
 				</crm:P14_carried_out_by>
 			</crm:E87_Curation_Activity>
 		</crm:P147_was_curated_by>
@@ -223,7 +225,7 @@
 	<!-- Functions are managed by Agencies -->
 	<xsl:template match="rif:activity/rif:relatedObject[rif:relation/@type='isManagedBy']">
 		<crm:P14_carried_out_by>
-			<crm:E40_Legal_Body rdf:about="resource/{encode-for-uri(rif:key)}"/>
+			<crm:E40_Legal_Body rdf:about="resource/{translate(rif:key, ' ', '-')}"/>
 		</crm:P14_carried_out_by>
 	</xsl:template>
 	

@@ -214,7 +214,7 @@
 			<p:iteration-source select="/oai:OAI-PMH/oai:ListRecords/oai:record[not(oai:header/@status='deleted')]">
 				<p:pipe step="handle-list-records-response" port="source"/>
 			</p:iteration-source>
-			<p:variable name="identifier" select="encode-for-uri(/oai:record/oai:header/oai:identifier)"/>
+			<p:variable name="identifier" select="translate(/oai:record/oai:header/oai:identifier, ' ', '-')"/>
 			<!-- cache the harvested record -->
 			<p:store name="save-record">
 				<p:with-option name="href" select="concat($cache, '/', encode-for-uri($identifier), '.xml')"/>
